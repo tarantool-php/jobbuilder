@@ -1,5 +1,7 @@
 # JobBuilder
 
+A set of utility classes to help creating complex jobs for Tarantool JobQueue.
+
 
 ## Installation
 

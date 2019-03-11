@@ -1,6 +1,6 @@
 {
     "name": "tarantool/jobbuilder",
-    "description": "Utility classes to help creating complex jobs for Tarantool JobQueue.",
+    "description": "A set of utility classes to help creating complex jobs for Tarantool JobQueue.",
     "type": "library",
     "license": "MIT",
     "authors": [
