@@ -30,6 +30,7 @@ final class JobBuilderTest extends TestCase
     public function testBuildFull() : void
     {
         [$data, $taskOptions] = JobBuilder::fromService('service_foo', ['bar', 'baz'])
+            ->withServiceMethod('qux')
             ->withConstantBackoff()
             ->withMaxRetries(3)
             ->withRecurrenceInterval(60)
@@ -40,9 +41,10 @@ final class JobBuilderTest extends TestCase
             ->withTube('foobar')
             ->build();
 
-        self::assertSame([
+        self::assertEquals([
             'payload' => [
                 'service' => 'service_foo',
+                'method' => 'qux',
                 'args' => ['bar', 'baz'],
             ],
             'retry_strategy' => 'constant',
@@ -66,7 +68,7 @@ final class JobBuilderTest extends TestCase
             ->withServiceArg('baz', 'qux')
             ->build();
 
-        self::assertSame([
+        self::assertEquals([
             'payload' => [
                 'service' => 'service_foo',
                 'args' => ['foo', 'bar', 'qux' => 'baz'],
@@ -80,7 +82,7 @@ final class JobBuilderTest extends TestCase
             ->withDisabledRetries()
             ->build();
 
-        self::assertSame([
+        self::assertEquals([
             'payload' => 'foo',
             'retry_limit' => 0,
         ], $data);
@@ -94,7 +96,7 @@ final class JobBuilderTest extends TestCase
             ->withConstantBackoff()
             ->build();
 
-        self::assertSame([
+        self::assertEquals([
             'payload' => 'foo',
             'retry_strategy' => 'constant',
         ], $data);
@@ -108,7 +110,7 @@ final class JobBuilderTest extends TestCase
             ->withExponentialBackoff()
             ->build();
 
-        self::assertSame([
+        self::assertEquals([
             'payload' => 'foo',
             'retry_strategy' => 'exponential',
         ], $data);
@@ -122,7 +124,7 @@ final class JobBuilderTest extends TestCase
             ->withLinearBackoff()
             ->build();
 
-        self::assertSame([
+        self::assertEquals([
             'payload' => 'foo',
             'retry_strategy' => 'linear',
         ], $data);

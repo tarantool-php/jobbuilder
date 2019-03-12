@@ -40,6 +40,14 @@ class JobBuilder
         return $self;
     }
 
+    public function withServiceMethod(string $method) : self
+    {
+        $new = clone $this;
+        $new->payload[JobOptions::PAYLOAD_SERVICE_METHOD] = $method;
+
+        return $new;
+    }
+
     public function withServiceArg($value, $key = null) : self
     {
         $new = clone $this;

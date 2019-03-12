@@ -20,6 +20,7 @@ use Tarantool\JobQueue\JobBuilder\JobBuilder;
 ...
 
 $task = JobBuilder::fromService('service_foo', ['bar', 'baz'])
+    ->withServiceMethod('qux')
     ->withConstantBackoff()
     ->withMaxRetries(3)
     ->withRecurrenceInterval(60)
