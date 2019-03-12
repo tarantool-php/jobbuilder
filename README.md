@@ -33,13 +33,19 @@ $task = JobBuilder::fromService('service_foo', ['bar', 'baz'])
 ```
 
 ```php
-$createJobBuilders = static function () use ($ids) {
+use Tarantool\JobQueue\JobBuilder\JobBuilder;
+use Tarantool\JobQueue\JobBuilder\JobBuilders;
+use Tarantool\JobQueue\JobBuilder\JobEmitter;
+
+...
+
+$jobBuilders = new JobBuilders((static function () use ($ids) {
     foreach ($ids as $id) {
         yield JobBuilder::fromService(MyHandler::class, ['id' => $id]);
     }
-};
+})());
 
-(new JobEmitter())->emit($createJobBuilders(), $queue);
+(new JobEmitter())->emit($jobBuilders, $queue);
 ```
 
 ## Tests
