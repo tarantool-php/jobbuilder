@@ -26,8 +26,8 @@ class JobBuilder
     public static function fromService(string $serviceId, array $serviceArgs = []) : self
     {
         $self = new self();
-        $self->payload['service'] = $serviceId;
-        $self->payload['args'] = $serviceArgs;
+        $self->payload[JobOptions::PAYLOAD_SERVICE_ID] = $serviceId;
+        $self->payload[JobOptions::PAYLOAD_SERVICE_ARGS] = $serviceArgs;
 
         return $self;
     }
@@ -45,8 +45,8 @@ class JobBuilder
         $new = clone $this;
 
         (null === $key)
-            ? $new->payload['args'][] = $value
-            : $new->payload['args'][$key] = $value;
+            ? $new->payload[JobOptions::PAYLOAD_SERVICE_ARGS][] = $value
+            : $new->payload[JobOptions::PAYLOAD_SERVICE_ARGS][$key] = $value;
 
         return $new;
     }
@@ -54,7 +54,7 @@ class JobBuilder
     public function withConstantBackoff() : self
     {
         $new = clone $this;
-        $new->jobOptions['retry_strategy'] = 'constant';
+        $new->jobOptions[JobOptions::RETRY_STRATEGY] = RetryStrategies::CONSTANT;
 
         return $new;
     }
@@ -62,7 +62,7 @@ class JobBuilder
     public function withExponentialBackoff() : self
     {
         $new = clone $this;
-        $new->jobOptions['retry_strategy'] = 'exponential';
+        $new->jobOptions[JobOptions::RETRY_STRATEGY] = RetryStrategies::EXPONENTIAL;
 
         return $new;
     }
@@ -70,7 +70,7 @@ class JobBuilder
     public function withLinearBackoff() : self
     {
         $new = clone $this;
-        $new->jobOptions['retry_strategy'] = 'linear';
+        $new->jobOptions[JobOptions::RETRY_STRATEGY] = RetryStrategies::LINEAR;
 
         return $new;
     }
@@ -78,7 +78,7 @@ class JobBuilder
     public function withMaxRetries(int $maxRetries) : self
     {
         $new = clone $this;
-        $new->jobOptions['retry_limit'] = $maxRetries;
+        $new->jobOptions[JobOptions::RETRY_LIMIT] = $maxRetries;
 
         return $new;
     }
@@ -86,7 +86,23 @@ class JobBuilder
     public function withDisabledRetries() : self
     {
         $new = clone $this;
-        $new->jobOptions['retry_limit'] = 0;
+        $new->jobOptions[JobOptions::RETRY_LIMIT] = 0;
+
+        return $new;
+    }
+
+    public function withRecurrenceInterval(int $interval) : self
+    {
+        $new = clone $this;
+        $new->jobOptions[JobOptions::RECURRENCE] = $interval;
+
+        return $new;
+    }
+
+    public function withDisabledRecurrence() : self
+    {
+        $new = clone $this;
+        unset($new->jobOptions[JobOptions::RECURRENCE]);
 
         return $new;
     }
@@ -134,7 +150,7 @@ class JobBuilder
     public function build() : array
     {
         return [
-            \array_merge(['payload' => $this->payload], $this->jobOptions),
+            \array_merge([JobOptions::PAYLOAD => $this->payload], $this->jobOptions),
             $this->taskOptions,
         ];
     }

@@ -32,6 +32,7 @@ final class JobBuilderTest extends TestCase
         [$data, $taskOptions] = JobBuilder::fromService('service_foo', ['bar', 'baz'])
             ->withConstantBackoff()
             ->withMaxRetries(3)
+            ->withRecurrenceInterval(60)
             ->withTimeToExecute(5)
             ->withTimeToRun(300)
             ->withPriority(4)
@@ -46,6 +47,7 @@ final class JobBuilderTest extends TestCase
             ],
             'retry_strategy' => 'constant',
             'retry_limit' => 3,
+            'recurrence' => 60,
         ], $data);
 
         self::assertSame([

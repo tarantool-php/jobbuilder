@@ -18,9 +18,11 @@ composer require tarantool/jobbuilder
 use Tarantool\JobQueue\JobBuilder\JobBuilder;
 
 ...
+
 $task = JobBuilder::fromService('service_foo', ['bar', 'baz'])
     ->withConstantBackoff()
     ->withMaxRetries(3)
+    ->withRecurrenceInterval(60)
     ->withTimeToExecute(5)
     ->withTimeToRun(300)
     ->withPriority(4)
