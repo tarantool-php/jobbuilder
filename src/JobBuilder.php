@@ -17,7 +17,7 @@ use Tarantool\Queue\Options;
 use Tarantool\Queue\Queue;
 use Tarantool\Queue\Task;
 
-class JobBuilder
+final class JobBuilder
 {
     private $payload;
     private $jobOptions = [];

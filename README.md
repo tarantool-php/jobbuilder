@@ -32,6 +32,15 @@ $task = JobBuilder::fromService('service_foo', ['bar', 'baz'])
     ->putTo($queue);
 ```
 
+```php
+$createJobBuilders = static function () use ($ids) {
+    foreach ($ids as $id) {
+        yield JobBuilder::fromService(MyHandler::class, ['id' => $id]);
+    }
+};
+
+(new JobEmitter())->emit($createJobBuilders(), $queue);
+```
 
 ## Tests
 
