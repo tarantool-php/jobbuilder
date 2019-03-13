@@ -18,7 +18,7 @@ use Tarantool\Queue\Task;
 
 final class JobEmitter
 {
-    public function emit(JobBuilders $jobBuilders, Queue $queue) : array
+    public function emit(iterable $jobBuilders, Queue $queue) : array
     {
         $jobs = [];
         foreach ($jobBuilders as $key => $jobBuilder) {
