@@ -33,7 +33,7 @@ final class JobEmitter
             return [$queue->put(...\reset($jobs))];
         }
 
-        $response = $queue->call('put_many', ...$jobs);
+        $response = $queue->call('put_many', $jobs);
         $isMap = \array_values($jobs) !== $jobs;
 
         return self::parseCallResponse($response, $isMap);
