@@ -11,7 +11,7 @@
     ],
     "require": {
         "php": "^7.1",
-        "tarantool/queue": "^0.8.0"
+        "tarantool/queue": "^0.7.0|^0.8.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.14",
