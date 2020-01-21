@@ -99,10 +99,10 @@ final class JobBuilder
         return $new;
     }
 
-    public function withRecurrenceInterval(int $interval) : self
+    public function withRecurrenceIntervalSeconds(int $intervalSeconds) : self
     {
         $new = clone $this;
-        $new->jobOptions[JobOptions::RECURRENCE] = $interval;
+        $new->jobOptions[JobOptions::RECURRENCE] = $intervalSeconds;
 
         return $new;
     }
@@ -115,18 +115,18 @@ final class JobBuilder
         return $new;
     }
 
-    public function withTimeToRun(int $ttl) : self
+    public function withTimeToLiveSeconds(int $ttlSeconds) : self
     {
         $new = clone $this;
-        $new->taskOptions[Options::TTL] = $ttl;
+        $new->taskOptions[Options::TTL] = $ttlSeconds;
 
         return $new;
     }
 
-    public function withTimeToExecute(int $ttr) : self
+    public function withTimeToRunSeconds(int $ttrSeconds) : self
     {
         $new = clone $this;
-        $new->taskOptions[Options::TTR] = $ttr;
+        $new->taskOptions[Options::TTR] = $ttrSeconds;
 
         return $new;
     }
@@ -139,10 +139,10 @@ final class JobBuilder
         return $new;
     }
 
-    public function withDelay(int $delay) : self
+    public function withDelaySeconds(int $delaySeconds) : self
     {
         $new = clone $this;
-        $new->taskOptions[Options::DELAY] = $delay;
+        $new->taskOptions[Options::DELAY] = $delaySeconds;
 
         return $new;
     }

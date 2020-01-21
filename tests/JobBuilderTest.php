@@ -33,11 +33,11 @@ final class JobBuilderTest extends TestCase
             ->withServiceMethod('qux')
             ->withConstantBackoff()
             ->withMaxRetries(3)
-            ->withRecurrenceInterval(60)
-            ->withTimeToExecute(5)
-            ->withTimeToRun(300)
+            ->withRecurrenceIntervalSeconds(600)
+            ->withTimeToLiveSeconds(300)
+            ->withTimeToRunSeconds(180)
             ->withPriority(4)
-            ->withDelay(60)
+            ->withDelaySeconds(60)
             ->withTube('foobar')
             ->build();
 
@@ -49,12 +49,12 @@ final class JobBuilderTest extends TestCase
             ],
             'retry_strategy' => 'constant',
             'retry_limit' => 3,
-            'recurrence' => 60,
+            'recurrence' => 600,
         ], $data);
 
         self::assertSame([
-            Options::TTR => 5,
             Options::TTL => 300,
+            Options::TTR => 180,
             Options::PRI => 4,
             Options::DELAY => 60,
             Options::UTUBE => 'foobar',

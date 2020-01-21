@@ -23,13 +23,13 @@ $task = JobBuilder::fromService('service_foo', ['bar', 'baz'])
     ->withServiceMethod('qux')
     ->withConstantBackoff()
     ->withMaxRetries(3)
-    ->withRecurrenceInterval(60)
-    ->withTimeToExecute(5)
-    ->withTimeToRun(300)
+    ->withRecurrenceIntervalSeconds(600)
+    ->withTimeToLiveSeconds(300)
+    ->withTimeToRunSeconds(180)
     ->withPriority(4)
-    ->withDelay(60)
+    ->withDelaySeconds(60)
     ->withTube('foobar')
-    ->putTo($queue);
+    ->build();
 ```
 
 ```php
