@@ -47,7 +47,7 @@ final class JobEmitter
 
         $tasks = [];
         foreach ($tuples as $key => $tuple) {
-            $tasks[$key] = Task::createFromTuple($tuple);
+            $tasks[$key] = Task::fromTuple($tuple);
         }
 
         return $tasks;
