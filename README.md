@@ -32,7 +32,7 @@ $task = JobBuilder::fromService('service_foo', ['bar', 'baz'])
     ->withPriority(4)
     ->withDelaySeconds(60)
     ->withTube('foobar')
-    ->build();
+    ->putTo($queue);
 ```
 
 ```php
