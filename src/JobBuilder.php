@@ -19,146 +19,113 @@ use Tarantool\Queue\Task;
 
 final class JobBuilder
 {
-    private $payload;
-    private $jobOptions = [];
+    private $reference;
+    private $retryStrategy;
+    private $maxRetries;
+    private $repeatInterval;
     private $taskOptions = [];
 
-    public static function fromService(string $serviceId, array $serviceArgs = []) : self
+    private function __construct($reference)
     {
-        $self = new self();
-        $self->payload[JobOptions::PAYLOAD_SERVICE_ID] = $serviceId;
-        $self->payload[JobOptions::PAYLOAD_SERVICE_ARGS] = $serviceArgs;
-
-        return $self;
+        $this->reference = $reference;
     }
 
-    public static function fromPayload($payload) : self
+    public static function fromService(string $id, array $arguments = []) : self
     {
-        $self = new self();
-        $self->payload = $payload;
-
-        return $self;
+        return new self(new ServiceReference($id, $arguments));
     }
 
-    public function withServiceMethod(string $method) : self
+    public static function fromCommandLine(string $commandLine) : self
     {
-        $new = clone $this;
-        $new->payload[JobOptions::PAYLOAD_SERVICE_METHOD] = $method;
-
-        return $new;
+        return new self(new ProcessReference($commandLine));
     }
 
-    public function withServiceArg($value, $key = null) : self
+    public function retryConstantly() : self
     {
-        $new = clone $this;
+        $this->retryStrategy = RetryStrategies::CONSTANT;
 
-        (null === $key)
-            ? $new->payload[JobOptions::PAYLOAD_SERVICE_ARGS][] = $value
-            : $new->payload[JobOptions::PAYLOAD_SERVICE_ARGS][$key] = $value;
-
-        return $new;
+        return $this;
     }
 
-    public function withConstantBackoff() : self
+    public function retryExponentially() : self
     {
-        $new = clone $this;
-        $new->jobOptions[JobOptions::RETRY_STRATEGY] = RetryStrategies::CONSTANT;
+        $this->retryStrategy = RetryStrategies::EXPONENTIAL;
 
-        return $new;
+        return $this;
     }
 
-    public function withExponentialBackoff() : self
+    public function retryLinearly() : self
     {
-        $new = clone $this;
-        $new->jobOptions[JobOptions::RETRY_STRATEGY] = RetryStrategies::EXPONENTIAL;
+        $this->retryStrategy = RetryStrategies::LINEAR;
 
-        return $new;
+        return $this;
     }
 
-    public function withLinearBackoff() : self
+    public function limitRetries(int $maxRetries) : self
     {
-        $new = clone $this;
-        $new->jobOptions[JobOptions::RETRY_STRATEGY] = RetryStrategies::LINEAR;
+        $this->maxRetries = $maxRetries;
 
-        return $new;
+        return $this;
     }
 
-    public function withMaxRetries(int $maxRetries) : self
+    public function disableRetries() : self
     {
-        $new = clone $this;
-        $new->jobOptions[JobOptions::RETRY_LIMIT] = $maxRetries;
+        $this->maxRetries = 0;
 
-        return $new;
+        return $this;
     }
 
-    public function withDisabledRetries() : self
+    public function repeat(int $interval) : self
     {
-        $new = clone $this;
-        $new->jobOptions[JobOptions::RETRY_LIMIT] = 0;
+        $this->repeatInterval = $interval;
 
-        return $new;
+        return $this;
     }
 
-    public function withRecurrenceIntervalSeconds(int $intervalSeconds) : self
+    public function limitLifeTime(int $ttl) : self
     {
-        $new = clone $this;
-        $new->jobOptions[JobOptions::RECURRENCE] = $intervalSeconds;
+        $this->taskOptions[Options::TTL] = $ttl;
 
-        return $new;
+        return $this;
     }
 
-    public function withDisabledRecurrence() : self
+    public function limitExecutionTime(int $ttr) : self
     {
-        $new = clone $this;
-        unset($new->jobOptions[JobOptions::RECURRENCE]);
+        $this->taskOptions[Options::TTR] = $ttr;
 
-        return $new;
+        return $this;
     }
 
-    public function withTimeToLiveSeconds(int $ttlSeconds) : self
+    public function prioritize(int $priority) : self
     {
-        $new = clone $this;
-        $new->taskOptions[Options::TTL] = $ttlSeconds;
+        $this->taskOptions[Options::PRI] = $priority;
 
-        return $new;
+        return $this;
     }
 
-    public function withTimeToRunSeconds(int $ttrSeconds) : self
+    public function delay(int $delay) : self
     {
-        $new = clone $this;
-        $new->taskOptions[Options::TTR] = $ttrSeconds;
+        $this->taskOptions[Options::DELAY] = $delay;
 
-        return $new;
+        return $this;
     }
 
-    public function withPriority(int $priority) : self
+    public function tube(string $tube) : self
     {
-        $new = clone $this;
-        $new->taskOptions[Options::PRI] = $priority;
+        $this->taskOptions[Options::UTUBE] = $tube;
 
-        return $new;
-    }
-
-    public function withDelaySeconds(int $delaySeconds) : self
-    {
-        $new = clone $this;
-        $new->taskOptions[Options::DELAY] = $delaySeconds;
-
-        return $new;
-    }
-
-    public function withTube(string $tube) : self
-    {
-        $new = clone $this;
-        $new->taskOptions[Options::UTUBE] = $tube;
-
-        return $new;
+        return $this;
     }
 
     public function build() : array
     {
         return [
-            \array_merge([JobOptions::PAYLOAD => $this->payload], $this->jobOptions),
+            new Payload(
+                $this->reference,
+                $this->retryStrategy,
+                $this->maxRetries,
+                $this->repeatInterval
+            ),
             $this->taskOptions,
         ];
     }
