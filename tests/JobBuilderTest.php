@@ -63,7 +63,7 @@ final class JobBuilderTest extends TestCase
 
     public function testBuildServiceArgs() : void
     {
-        [$data, ] = JobBuilder::fromService('service_foo', ['foo'])
+        [$data] = JobBuilder::fromService('service_foo', ['foo'])
             ->withServiceArg('bar')
             ->withServiceArg('baz', 'qux')
             ->build();
